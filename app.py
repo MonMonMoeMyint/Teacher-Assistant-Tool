@@ -9,12 +9,17 @@ load_dotenv()
 app = Flask(__name__)
 
 FIXED_OPENAPI_JSON = {
-    "openapi": "3.0.0",
+    "openapi": "3.1.0",
     "info": {
         "title": "Cause-Effect Finder API",
-        "version": "1.0.0",
-        "description": "API to find cause-effect relationships."
+        "description": "API to find cause-effect relationships.",
+        "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "https://teacher-assistant-tool-production.up.railway.app"
+        }
+    ],
     "paths": {
         "/get_cause_effect": {
             "post": {
@@ -71,6 +76,7 @@ FIXED_OPENAPI_JSON = {
         }
     }
 }
+
 
 # Load dataset from Google Drive (provide your shared link ID)
 google_drive_id = os.getenv("GOOGLE_DRIVE_FILE_ID")
