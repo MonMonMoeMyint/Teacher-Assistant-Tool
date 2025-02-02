@@ -29,28 +29,51 @@ def get_cause_effect():
     response = matches[['cause', 'effect']].to_dict(orient='records')
     return jsonify({'results': response})
 
-    # Endpoint 2: Serve OpenAPI JSON
-    @app.route('/openapi.json', methods=['GET'])
-    def openapi():
-        return jsonify({
-            "openapi": "3.0.0",
-            "info": {"title": "Cause-Effect Finder API", "version": "1.0.0"},
-            "paths": {
-                "/get_cause_effect": {
-                    "post": {
-                        "summary": "Find cause-effect relationships based on input",
-                        "operationId": "getCauseEffect",
-                        "requestBody": {
-                            "required": True,
-                            "content": {"application/json": {"schema": {"type": "object", "properties": {"query": {"type": "string"}}}}}
-                        },
-                        "responses": {
-                            "200": {"description": "Successful response", "content": {"application/json": {"schema": {"type": "object", "properties": {"cause": {"type": "string"}, "effect": {"type": "string"}, "advice": {"type": "string"}}}}}}
+# Endpoint 2: Serve OpenAPI JSON
+@app.route('/openapi.json', methods=['GET'])
+def openapi():
+    return jsonify({
+        "openapi": "3.0.0",
+        "info": {"title": "Cause-Effect Finder API", "version": "1.0.0"},
+        "paths": {
+            "/get_cause_effect": {
+                "post": {
+                    "summary": "Find cause-effect relationships based on input",
+                    "operationId": "getCauseEffect",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "query": {"type": "string"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Successful response",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "cause": {"type": "string"},
+                                            "effect": {"type": "string"},
+                                            "advice": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        })
+        }
+    })
 
-    if name == '__main__':
-        app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
