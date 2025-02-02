@@ -8,6 +8,70 @@ load_dotenv()
 
 app = Flask(__name__)
 
+FIXED_OPENAPI_JSON = {
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Cause-Effect Finder API",
+        "version": "1.0.0",
+        "description": "API to find cause-effect relationships."
+    },
+    "paths": {
+        "/get_cause_effect": {
+            "post": {
+                "summary": "Find cause-effect relationships based on input",
+                "operationId": "getCauseEffect",
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "query": { "type": "string" }
+                                },
+                                "required": ["query"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CauseEffectResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (missing or invalid query parameter)"
+                    },
+                    "404": {
+                        "description": "No relevant results found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CauseEffectResponse": {
+                "type": "object",
+                "properties": {
+                    "cause": { "type": "string" },
+                    "effect": { "type": "string" },
+                    "advice": { "type": "string" }
+                }
+            }
+        }
+    }
+}
+
 # Load dataset from Google Drive (provide your shared link ID)
 google_drive_id = os.getenv("GOOGLE_DRIVE_FILE_ID")
 url = f"https://drive.google.com/uc?id={google_drive_id}"
@@ -32,48 +96,7 @@ def get_cause_effect():
 # Endpoint 2: Serve OpenAPI JSON
 @app.route('/openapi.json', methods=['GET'])
 def openapi():
-    return jsonify({
-        "openapi": "3.0.0",
-        "info": {"title": "Cause-Effect Finder API", "version": "1.0.0"},
-        "paths": {
-            "/get_cause_effect": {
-                "post": {
-                    "summary": "Find cause-effect relationships based on input",
-                    "operationId": "getCauseEffect",
-                    "requestBody": {
-                        "required": True,
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "query": {"type": "string"}
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "responses": {
-                        "200": {
-                            "description": "Successful response",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "type": "object",
-                                        "properties": {
-                                            "cause": {"type": "string"},
-                                            "effect": {"type": "string"},
-                                            "advice": {"type": "string"}
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    })
+    return jsonify(FIXED_OPENAPI_JSON)
 
 if __name__ == '__main__':
     app.run(debug=True)
