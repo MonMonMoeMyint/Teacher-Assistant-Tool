@@ -91,12 +91,21 @@ def get_cause_effect():
         return jsonify({'error': 'Query is required'}), 400
 
     # Filter dataset for matches
-    matches = data[data['cause'].str.contains(user_input, case=False, na=False)]
+    # matches = data[data['cause'].str.contains(user_input, case=False, na=False)]
+    matches = data[
+        data.apply(
+            lambda row: any(
+                str(row[col]).lower().find(user_input.lower()) != -1
+                for col in ["cause", "effect", "sentence"]
+            ),
+            axis=1,
+        )
+    ]
     if matches.empty:
         return jsonify({'message': 'No relevant results found'}), 404
 
     # Return top results
-    response = matches[['cause', 'effect']].to_dict(orient='records')
+    response = matches[['cause', 'effect', 'sentence']].to_dict(orient='records')
     return jsonify({'results': response})
 
 # Endpoint 2: Serve OpenAPI JSON
